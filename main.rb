@@ -15,19 +15,11 @@ def main args
         puts 'PW for this key already exists!'
         exit 0
       end
-      print "\nEnter new PW for #{key}: "
-      pw0 = STDIN.noecho(&:gets).chomp
-      print "\nRetype new PW for #{key} :"
-      pw1 = STDIN.noecho(&:gets).chomp
-      print "\n"
-      if pw0==pw1
-        add_pw key, pw0
-        puts 'New PW added'
-      else
-        puts 'Passwords do not match!'
-      end
+      add_pw key, get_new_pw
+      puts 'New PW added'
     when '-d'
-    else
+
+    when !nil
       pw =  get_pw args[1]
       if args[2]=='-p'
         puts "\n#{pw}\nYou should close this window now!"
@@ -40,7 +32,8 @@ end
 
 def create_pwkey( prompt='Master password: ')
   print prompt 
-  OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
+  x =OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
+  puts x
 end
 
 def read file
@@ -89,8 +82,8 @@ def update cipher, data
   cipher.iv = @iv
   begin 
     cipher.update(data) + cipher.final
-  rescue 
-    puts "Wrong PW?"
+  rescue Exception => e 
+    puts "Wrong PW? #{e}"
     exit 0
   end
 end
@@ -99,6 +92,19 @@ def create_cipher
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
 end
 
+def get_new_pw
+      print "\nEnter new PW for #{key}: "
+      pw0 = STDIN.noecho(&:gets).chomp
+      print "\nRetype new PW for #{key} :"
+      pw1 = STDIN.noecho(&:gets).chomp
+      print "\n"
+      if pw0==pw1
+        return pw0
+      else
+        puts 'Passwords do not match!'
+	exit 0
+      end
+end
 if __FILE__ == $0
   main ARGV.dup
 end

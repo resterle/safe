@@ -10,13 +10,18 @@ def main args
   decrypt_keys
   case args[1]
     when '-c'
-      print "Enter new PW for #{args[2]}: "
+      key = args[2]
+      if @data.has_key? key
+        puts 'PW for this key already exists!'
+        exit 0
+      end
+      print "\nEnter new PW for #{key}: "
       pw0 = STDIN.noecho(&:gets).chomp
-      print "\nRetype new PW for #{args[2]} :"
+      print "\nRetype new PW for #{key} :"
       pw1 = STDIN.noecho(&:gets).chomp
       print "\n"
       if pw0==pw1
-        add_pw args[2], pw0
+        add_pw key, pw0
         puts 'New PW added'
       else
         puts 'Passwords do not match!'
@@ -25,7 +30,7 @@ def main args
     else
       pw =  get_pw args[1]
       if args[2]=='-p'
-        puts pw
+        puts "\n#{pw}\nYou should close this window now!"
       else
         Clipboard.copy pw
      end
@@ -39,7 +44,6 @@ def create_pwkey( prompt='Master password: ')
 end
 
 def read file
-  puts file
   File.open(file, 'r+'){|f|
     raw = f.read
     if raw!=''

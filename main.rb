@@ -32,8 +32,7 @@ end
 
 def create_pwkey( prompt='Master password: ')
   print prompt 
-  x =OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
-  puts x
+  OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
 end
 
 def read file

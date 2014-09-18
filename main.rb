@@ -19,7 +19,7 @@ def main args
       puts 'New PW added'
     when '-d'
 
-    when !nil
+    else
       pw =  get_pw args[1]
       if args[2]=='-p'
         puts "\n#{pw}\nYou should close this window now!"
@@ -32,8 +32,7 @@ end
 
 def create_pwkey( prompt='Master password: ')
   print prompt 
-  x =OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
-  puts x
+  OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
 end
 
 def read file

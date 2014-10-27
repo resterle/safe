@@ -17,8 +17,11 @@ def main args
       end
       add_pw key, get_new_pw
       puts 'New PW added'
-    when '-d'
-
+    when '-l'
+      puts 'keys:'
+      @data.keys.each do |key|
+        puts " #{key}"
+      end
     else
       pw =  get_pw args[1]
       if args[2]=='-p'

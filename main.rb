@@ -15,7 +15,7 @@ def main args
         puts 'PW for this key already exists!'
         exit 0
       end
-      add_pw key, get_new_pw
+      add_pw key, get_new_pw(key)
       puts 'New PW added'
     when '-l'
       puts 'keys:'
@@ -94,7 +94,7 @@ def create_cipher
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
 end
 
-def get_new_pw
+def get_new_pw key
       print "\nEnter new PW for #{key}: "
       pw0 = STDIN.noecho(&:gets).chomp
       print "\nRetype new PW for #{key} :"

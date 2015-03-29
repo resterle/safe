@@ -15,11 +15,14 @@ def main args
         puts 'PW for this key already exists!'
         exit 0
       end
-      add_pw key, get_new_pw
+      add_pw key, get_new_pw(key)
       puts 'New PW added'
-    when '-d'
-
-    when !nil
+    when '-l'
+      puts 'keys:'
+      @data.keys.each do |key|
+        puts " #{key}"
+      end
+    else
       pw =  get_pw args[1]
       if args[2]=='-p'
         puts "\n#{pw}\nYou should close this window now!"
@@ -31,10 +34,8 @@ def main args
 end
 
 def create_pwkey( prompt='Master password: ')
-  print prompt  
-  inp = (STDIN.noecho(&:gets).chomp)
-  puts inp.encoding
-  OpenSSL::PKCS5.pbkdf2_hmac_sha1(inp, 'hc4dpx5fav', 2487, 512)
+  print prompt 
+  OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
 end
 
 def read file
@@ -93,7 +94,7 @@ def create_cipher
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
 end
 
-def get_new_pw
+def get_new_pw key
       print "\nEnter new PW for #{key}: "
       pw0 = STDIN.noecho(&:gets).chomp
       print "\nRetype new PW for #{key} :"

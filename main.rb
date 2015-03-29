@@ -2,7 +2,9 @@ require 'openssl'
 require 'io/console'
 require 'json'
 require 'clipboard'
+
 Encoding::primary_encoding="UTF-8"
+
 def main args
   @iv = '07FfuoxMNawSnYTpv8FUI699d1O6ATRX6j32feJt'
   @key = create_pwkey
@@ -35,7 +37,9 @@ end
 
 def create_pwkey( prompt='Master password: ')
   print prompt 
-  OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
+  pwkey = OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
+  print '\n'
+  return pwkey
 end
 
 def read file

@@ -3,23 +3,16 @@ require 'io/console'
 require 'json'
 require 'clipboard'
 
-Encoding::primary_encoding="UTF-8"
-
 def main args
   @iv = '07FfuoxMNawSnYTpv8FUI699d1O6ATRX6j32feJt'
   @key = create_pwkey
   @file = args[0]
   decrypt_keys
   case args[1]
-    when '-c'
-      key = args[2]
-      if @data.has_key? key
-        puts 'PW for this key already exists!'
-        exit 0
-      end
-      add_pw key, get_new_pw(key)
-      puts 'New PW added'
-    when '-l'
+    when 'create'
+      create_entry
+      puts 'New entry added'
+    when 'list'
       puts 'keys:'
       @data.keys.each do |key|
         puts " #{key}"
@@ -38,7 +31,7 @@ end
 def create_pwkey( prompt='Master password: ')
   print prompt 
   pwkey = OpenSSL::PKCS5.pbkdf2_hmac_sha1( STDIN.noecho(&:gets).chomp, 'hc4dpx5fav', 2487, 512)
-  print '\n'
+  puts "\n"
   return pwkey
 end
 
@@ -61,10 +54,7 @@ end
 
 def decrypt_keys
   @data = read @file
-end
-
-def add_pw key, val
-  @data[key] = val
+  puts "DATA: #{@data}"
 end
 
 def get_pw key
@@ -98,14 +88,21 @@ def create_cipher
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
 end
 
-def get_new_pw key
-      print "\nEnter new PW for #{key}: "
+def create_entry
+      print "\nNew entry\nNme: "
+      name = $stdin.gets.chomp
+      if @data.keys.include? name
+        puts "Entry with name #{name} already exists!"
+        return
+      end
+      print "\nEnter new PW for #{name}: "
       pw0 = STDIN.noecho(&:gets).chomp
-      print "\nRetype new PW for #{key} :"
+      print "\nRetype new PW for #{name}: "
       pw1 = STDIN.noecho(&:gets).chomp
       print "\n"
       if pw0==pw1
-        return pw0
+        puts "\nReview your data\nName: #{name}\nPassword: #{pw0.gsub(/./, '*')}\nIs this data correct? (yes/no)"
+        @data[name]=pw0 if $stdin.gets.chomp=='yes'
       else
         puts 'Passwords do not match!'
 	exit 0
